@@ -43,4 +43,8 @@ const csvParser = async () => {
 
 csvParser();
 
-module.exports = csvParser;
+module.exports = {
+  removeCorrectRedirects,
+  cleanUrlList,
+  csvParser,
+};
