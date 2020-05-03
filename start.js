@@ -22,7 +22,7 @@ const csvWriter = createObjectCsvWriter({
 const removeCorrectRedirects = (req) => req
   .filter(site => site.statusCode !== 200);
 
-(async () => {
+const csvParser = async () => {
   const link = await queryGoogleFromSite(targetSite, pagesToScrape || 10)
   if(!link) {
     return;
@@ -35,4 +35,6 @@ const removeCorrectRedirects = (req) => req
     csvWriter.writeRecords(unexistentedLinks)
       .then(() => console.log('...Done'));
   })
-})()
+}
+
+csvParser();
