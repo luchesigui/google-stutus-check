@@ -38,3 +38,5 @@ const csvParser = async () => {
 }
 
 csvParser();
+
+module.exports = csvParser;
