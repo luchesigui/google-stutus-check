@@ -21,6 +21,12 @@ const csvWriter = createObjectCsvWriter({
 
 const removeCorrectRedirects = (req) => req
   .filter(site => site.statusCode !== 200);
+  
+const cleanUrlList = (records) => {
+  console.log('Writing the CSV file');
+  return csvWriter.writeRecords(records)
+    .then(() => console.log('...Done'));
+}
 
 const csvParser = async () => {
   const link = await queryGoogleFromSite(targetSite, pagesToScrape || 10)
@@ -31,9 +37,7 @@ const csvParser = async () => {
   console.log('Cleaning links that are already correct');
   statusCheck.startCheckingLink(link, (site) => {
     const unexistentedLinks = removeCorrectRedirects(site);
-    console.log('Writing the CSV file');
-    csvWriter.writeRecords(unexistentedLinks)
-      .then(() => console.log('...Done'));
+    const csvPromise = cleanUrlList(unexistentedLinks);
   })
 }
 
