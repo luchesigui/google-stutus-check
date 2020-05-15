@@ -4,11 +4,19 @@
   "description": "",
   "main": "start.js",
   "keywords": [],
+  "scripts": {
+    "test": "jest --verbose --watch"
+  },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "csv-writer": "^1.6.0",
-    "puppeteer": "^3.0.2",
-    "status-check": "0.0.17"
+    "lodash.chunk": "^4.2.0",
+    "mock-fs": "^4.12.0",
+    "node-fetch": "^2.6.0",
+    "puppeteer": "^3.0.2"
+  },
+  "devDependencies": {
+    "jest": "^25.5.4"
   }
 }
