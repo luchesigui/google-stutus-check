@@ -29,7 +29,7 @@ const queryGoogleFromSite = async (site, pagesToQuery = 10) => {
       break;
     }
 
-    console.log(`Retriving page ${index+1} from site:${site}`)
+    console.log(`Capturando informações da página ${index+1} da busca por site:${site}`)
     await page.click('#pnnext');
     await page.waitFor('#search');
   }
