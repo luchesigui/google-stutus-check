@@ -46,7 +46,7 @@ const flat = (prev, next) => [...prev, ...next]
 const csvParser = async (targetSite, csvPath = 'filtered-urls.csv', pagesToScrape = 10) => {
   console.log('Iniciando busca no Google')
   const links = await queryGoogleFromSite(targetSite, pagesToScrape)
-  if(!links) {
+  if(!links.length) {
     console.log('Erro na captura dos links');
     return;
   }
