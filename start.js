@@ -32,8 +32,8 @@ const getSiteStatus = async (link) => {
 
 const asyncReducer = (func) =>
   async (accPromise, currentChunk, index) => {
-    console.log(`Fetching status from links on page ${index + 1}`)
     const accumulator = await accPromise
+    console.log(`Fetching status from links on page ${index + 1}`)
     
     const currentBatchPromises = currentChunk.map(func)
     const result = await Promise.all(currentBatchPromises)
