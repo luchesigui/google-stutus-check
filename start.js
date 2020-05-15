@@ -7,7 +7,7 @@ const queryGoogleFromSite = require('./scrapper');
 const CHUNK_LENGTH = 10;
   
 const writeCSV = async (records, path) => {
-  console.log('Writing the CSV file');
+  console.log('Escrevendo arquivo csv');
 
   const response = await createObjectCsvWriter({
     path,
@@ -17,7 +17,7 @@ const writeCSV = async (records, path) => {
   })
   .writeRecords(records);
 
-  console.log('...Done');
+  console.log('Pronto');
   return response;
 }
 
@@ -33,7 +33,7 @@ const getSiteStatus = async (link) => {
 const asyncReducer = (func) =>
   async (accPromise, currentChunk, index) => {
     const accumulator = await accPromise
-    console.log(`Fetching status from links on page ${index + 1}`)
+    console.log(`Verificando status dos links da página ${index + 1}`)
     
     const currentBatchPromises = currentChunk.map(func)
     const result = await Promise.all(currentBatchPromises)
@@ -44,13 +44,14 @@ const asyncReducer = (func) =>
 const flat = (prev, next) => [...prev, ...next]
 
 const csvParser = async (targetSite, csvPath = 'filtered-urls.csv', pagesToScrape = 10) => {
+  console.log('Iniciando busca no Google')
   const links = await queryGoogleFromSite(targetSite, pagesToScrape)
   if(!links) {
     console.log('Erro na captura dos links');
     return;
   }
 
-  console.log('Cleaning links that are already correct');
+  console.log('Descartando links que estão corretos');
   const linkChunks = chunk(links, CHUNK_LENGTH);
   const siteInfoArray = await linkChunks.reduce(asyncReducer(getSiteStatus), [])
   const linkListFlatAndClean = siteInfoArray
