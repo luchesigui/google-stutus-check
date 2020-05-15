@@ -1,50 +1,72 @@
-const targetSite = process.argv[2];
-const csvDest = process.argv[3];
-const pagesToScrape = process.argv[4];
-
-if(!targetSite) {
-  console.log('Por favor, informe um site para o scrapping')
-}
-
-const statusCheck = require('status-check');
+const fetch = require('node-fetch')
+const chunk = require('lodash.chunk');
 const { createObjectCsvWriter } = require('csv-writer');
+
 const queryGoogleFromSite = require('./scrapper');
 
-const defaultPathToFilteredCSV = 'filtered-urls.csv';
-
-const csvWriter = createObjectCsvWriter({
-  path: csvDest || defaultPathToFilteredCSV,
-  header: [
-      { id: 'url', title: 'link_from' },
-  ]
-});
-
-const removeCorrectRedirects = (req) => req
-  .filter(site => site.statusCode !== 200);
+const CHUNK_LENGTH = 10;
   
-const cleanUrlList = (records) => {
+const writeCSV = async (records, path) => {
   console.log('Writing the CSV file');
-  return csvWriter.writeRecords(records)
-    .then(() => console.log('...Done'));
+
+  const response = await createObjectCsvWriter({
+    path,
+    header: [
+      { id: 'link', title: 'link_from' },
+    ]
+  })
+  .writeRecords(records);
+
+  console.log('...Done');
+  return response;
 }
 
-const csvParser = async () => {
-  const link = await queryGoogleFromSite(targetSite, pagesToScrape || 10)
-  if(!link) {
+const getSiteStatus = async (link) => {
+  const { status } = await fetch(link)
+
+  return {
+    link,
+    status
+  };
+}
+
+const asyncReducer = (func) =>
+  async (accPromise, currentChunk, index) => {
+    console.log(`Fetching status from links on page ${index + 1}`)
+    const accumulator = await accPromise
+    
+    const currentBatchPromises = currentChunk.map(func)
+    const result = await Promise.all(currentBatchPromises)
+
+    return [...accumulator, result]
+  }
+
+const flat = (prev, next) => [...prev, ...next]
+
+const csvParser = async (targetSite, csvPath = 'filtered-urls.csv', pagesToScrape = 10) => {
+  const links = await queryGoogleFromSite(targetSite, pagesToScrape)
+  if(!links) {
+    console.log('Erro na captura dos links');
     return;
   }
 
   console.log('Cleaning links that are already correct');
-  statusCheck.startCheckingLink(link, (site) => {
-    const unexistentedLinks = removeCorrectRedirects(site);
-    const csvPromise = cleanUrlList(unexistentedLinks);
-  })
+  const linkChunks = chunk(links, CHUNK_LENGTH);
+  const siteInfoArray = await linkChunks.reduce(asyncReducer(getSiteStatus), [])
+  const linkListFlatAndClean = siteInfoArray
+    .reduce(flat, [])
+    .filter(site => site.status !== 200)
+  
+  if(linkListFlatAndClean.length) {
+    const csvPromise = await writeCSV(linkListFlatAndClean, csvPath);
+    console.log(csvPromise)
+    return csvPromise;
+  }
+
+  console.log('Todos os links capturados estão válidos')
+  return linkListFlatAndClean;
 }
 
-csvParser();
-
 module.exports = {
-  removeCorrectRedirects,
-  cleanUrlList,
   csvParser,
 };
