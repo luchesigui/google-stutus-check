@@ -58,9 +58,8 @@ const csvParser = async (targetSite, csvPath = 'filtered-urls.csv', pagesToScrap
     .filter(site => site.status !== 200)
   
   if(linkListFlatAndClean.length) {
-    const csvPromise = await writeCSV(linkListFlatAndClean, csvPath);
-    console.log(csvPromise)
-    return csvPromise;
+    await writeCSV(linkListFlatAndClean, csvPath);
+    return;
   }
 
   console.log('Todos os links capturados estão válidos')
