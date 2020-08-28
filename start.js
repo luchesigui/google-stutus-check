@@ -43,11 +43,22 @@ const asyncReducer = (func) =>
 
 const flat = (prev, next) => [...prev, ...next]
 
-const csvParser = async (targetSite, csvPath = 'filtered-urls.csv', pagesToScrape = 10) => {
+const csvParser = async (targetSite, csvPath = 'filtered-urls.csv', pagesToScrape = 10, checkLinks = true) => {
   console.log('Iniciando busca no Google')
   const links = await queryGoogleFromSite(targetSite, pagesToScrape)
   if(!links.length) {
     console.log('Erro na captura dos links');
+    return;
+  }
+
+  if(checkLinks) {
+    console.log(links)
+    const linkObjs = links.map(link => ({
+      link,
+      link_from: '',
+    }))
+    await writeCSV(linkObjs, csvPath);
+    console.log('Os links desse arquivo não foram validados para saber se estão quebrados ou não')
     return;
   }
 
