@@ -1,7 +1,7 @@
 const puppeteer = require('puppeteer');
 
 const getPageLinks = () => {
-  let linkSelector = document.querySelectorAll('#search .rc .r > a');
+  const linkSelector = document.querySelectorAll('#search div > div > div > div > a');
   return Array
     .from(linkSelector)
     .map(link => link.href);
