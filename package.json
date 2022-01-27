@@ -2,12 +2,14 @@
   "name": "site-redirect-csv",
   "version": "1.0.0",
   "description": "",
-  "main": "start.js",
+  "main": "src/index.js",
   "keywords": [],
   "scripts": {
-    "test": "jest --verbose --watch"
+    "lint": "standard",
+    "prepare": "husky install",
+    "test": "jest"
   },
-  "author": "",
+  "author": "Guilherme Luchesi",
   "license": "ISC",
   "dependencies": {
     "csv-writer": "^1.6.0",
@@ -17,6 +19,20 @@
     "puppeteer": "^3.0.2"
   },
   "devDependencies": {
-    "jest": "^25.5.4"
+    "husky": "^7.0.4",
+    "jest": "^25.5.4",
+    "lint-staged": "^12.3.2",
+    "standard": "^16.0.4"
+  },
+  "standard": {
+    "ignore": [
+      "node_modules",
+      "package.json",
+      "README.md"
+    ],
+    "env": {
+      "node": true,
+      "jest": true
+    }
   }
 }
