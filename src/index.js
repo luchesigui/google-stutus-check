@@ -1,12 +1,42 @@
-const { csvParser } = require("./start");
+const yargs = require('yargs')
+const { csvParser } = require("./start")
 
-const targetSite = process.argv[2];
-const csvDest = process.argv[3];
-const pagesToScrape = process.argv[4];
-const checkLinks = process.argv[5];
+const args = yargs
+  .scriptName('site-redirect-csv')
+  .usage('$0 <cmd> [args]')
+  .command('scrape', 'Starts scraping Google results for the given domain')
+  .option('domain', {
+    alias: 'd',
+    description: 'The domain to search for',
+    type: 'string'
+  })
+  .option('csv-name', {
+    description: 'The name of the csv file will be created',
+    type: 'string',
+    default: 'filtered-urls.csv'
+  })
+  .option('pages', {
+    alias: 'p',
+    description: 'Quantity of pages to scrape',
+    type: 'number',
+    default: 10
+  })
+  .option('check', {
+    alias: 'c',
+    description: 'Rather the links scraped should be checked for redirects or not',
+    type: 'boolean',
+    default: true
+  })
+  .demandOption('domain', 'Please provide a domain to scrape')
+  .help()
+  .alias('help', 'h')
+  .argv
 
-if (!targetSite) {
-  console.log("Por favor, informe um site para o scrapping");
+const configuration = {
+  targetSite: args.domain,
+  csvDest: args.csvName,
+  pagesToScrape: args.pages,
+  checkLinks: args.check
 }
 
-csvParser(targetSite, csvDest, pagesToScrape, checkLinks);
+csvParser(configuration);
